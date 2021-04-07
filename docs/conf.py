@@ -13,7 +13,10 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../src/"))
+sys.path.insert(0, os.path.abspath("../"))
+sys.path.insert(1, os.path.abspath("../src/"))
+
+from src.hyperfit import __version__
 
 # -- Project information -----------------------------------------------------
 
@@ -21,9 +24,11 @@ project = "HyperFit"
 copyright = "2021, Cullan Howlett"
 author = "Cullan Howlett"
 
-# The full version, including alpha/beta/rc tags
-release = "0.0.1"
+# The short X.Y version.
+version = ".".join(__version__.split(".")[0:2])
 
+# The full version, including alpha/beta/rc tags.
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 

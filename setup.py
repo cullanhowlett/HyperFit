@@ -1,5 +1,6 @@
-from setuptools import setup, find_packages
 import pathlib
+from setuptools import setup, find_packages
+from src.hyperfit import __version__
 
 here = pathlib.Path(__file__).parent.resolve()
 
@@ -8,7 +9,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="hyperfit",
-    version="0.0.9",
+    version=__version__,
     description="Properly fit data with x and y errors",
     long_description=long_description,
     long_description_content_type="text/markdown",

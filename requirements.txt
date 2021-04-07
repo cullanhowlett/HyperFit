@@ -3,3 +3,5 @@ scipy>=1.6.0
 zeus-mcmc>=2.3.0
 pandas>=1.2.0
 emcee>=3.0.0
+sphinx
+sphinx_rtd_theme
