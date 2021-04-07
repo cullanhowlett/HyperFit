@@ -92,6 +92,8 @@ class HyperFit(object):
     # A routine to optimize the model given some data
     def optimize(self, begin, verbose=False):
 
+        """ Find the best fit """
+
         if len(begin) != self.ndims + 1:
             raise ValueError("length of begin not equal to N dimensions + 1")
 
@@ -114,6 +116,8 @@ class HyperFit(object):
 
     # A routine run a zeus MCMC on the model given the data
     def zeus(self, begin, max_iter=100000, batchsize=1000, verbose=False):
+
+        """ Run an MCMC on the data using the Zeus sampler """
 
         if len(begin) != self.ndims + 1:
             raise ValueError("length of begin not equal to N dimensions + 1")
@@ -156,6 +160,8 @@ class HyperFit(object):
 
     # A routine run a zeus MCMC on the model given the data
     def emcee(self, begin, max_iter=100000, batchsize=1000, verbose=False):
+
+        """ Run an MCMC on the data using the emcee sampler """
 
         if len(begin) != self.ndims + 1:
             raise ValueError("length of begin not equal to N dimensions + 1")
