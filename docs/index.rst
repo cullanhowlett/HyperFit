@@ -25,7 +25,7 @@ HyperFit requires the following dependencies::
     numpy
     scipy
     pandas
-    zeus
+    zeus-mcmc
     emcee
 
 HyperFit can be installed via::
