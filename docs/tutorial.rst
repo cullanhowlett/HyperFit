@@ -102,7 +102,7 @@ and passing it our data, then calling the ``optimize`` function with some suitab
 
 .. code-block:: python
 
-    from hyperfit import LinFit
+    from hyperfit.linfit import LinFit
 
     hf = LinFit(data, cov, weights=weights)
 

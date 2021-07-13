@@ -1,5 +1,5 @@
 import pathlib
-from setuptools import setup, find_packages
+from setuptools import setup
 from src.hyperfit import __version__
 
 here = pathlib.Path(__file__).parent.resolve()
@@ -26,9 +26,14 @@ setup(
     ],
     package_dir={"": "src"},
     packages=["hyperfit"],
-    python_requires=">=3.9, <4",
-    py_modules=["os", "inspect", "abc"],
-    install_requires=["numpy>=1.20.0", "scipy>=1.6.0", "zeus-mcmc>=2.3.0", "pandas>=1.2.0", "emcee>=3.0.0"],
+    python_requires=">=3.7, <4",
+    install_requires=[
+        "numpy>=1.20.0",
+        "scipy>=1.6.0",
+        "zeus-mcmc>=2.3.0",
+        "pandas>=1.2.0",
+        "emcee>=3.0.0",
+    ],
     package_data={"hyperfit": ["data/*.txt"]},
     project_urls={
         "Bug Reports": "https://github.com/CullanHowlett/HyperFit/issues",

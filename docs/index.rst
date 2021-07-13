@@ -12,7 +12,8 @@ Here is a short example of it in action, which is covered in more detail in the 
 .. code-block:: python
 
     import numpy as np
-    from hyperfit import LinFit
+    from hyperfit.linfit import LinFit
+    from hyperfit.data import ExampleData
 
     data = ExampleData()
     hf = LinFit(data.xs, data.cov, weights=data.weights)
