@@ -11,7 +11,7 @@ started fitting your own datasets.
 LinFit Class
 --------------
 
-.. autoclass:: hyperfit.LinFit
+.. autoclass:: hyperfit.linfit.LinFit
     :members:
 
 Data Classes
