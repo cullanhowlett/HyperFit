@@ -490,7 +490,6 @@ class LinFit(object):
 
 if __name__ == "__main__":
 
-    import numpy as np
     from src.hyperfit.linfit import LinFit
     from src.hyperfit.data import ExampleData, GAMAsmVsize, TFR, FP6dFGS, MJB
 
