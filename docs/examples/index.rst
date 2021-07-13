@@ -7,4 +7,4 @@ Examples
 ========
 
 HyperFit comes bundled with some real 2D and 3D astrophysics data. These examples, and how you can run them yourself
-are presented below
+will be added soon!
