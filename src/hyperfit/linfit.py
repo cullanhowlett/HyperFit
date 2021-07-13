@@ -54,7 +54,7 @@ class LinFit(object):
         self.ndata = np.shape(data)[1]
         self.data = data
         self.cov = cov
-        self.weights = np.ones(len(data)) if weights is None else weights
+        self.weights = np.ones(self.ndata) if weights is None else weights
         self.vertaxis = vertaxis
 
         # Some variables to store the two sets of fitting coordinates and scatter parameters
@@ -495,6 +495,7 @@ if __name__ == "__main__":
 
     # Load in the ExampleData
     data = ExampleData()
+    print(np.shape(data.xs), np.shape(data.cov), np.shape(data.weights))
     hf = LinFit(data.xs, data.cov, weights=data.weights)
 
     # Run an MCMC

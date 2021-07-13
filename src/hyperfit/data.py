@@ -140,8 +140,6 @@ class FP6dFGS(FitData):
         self.cov = np.einsum("jd,ijd,id->ijd", err, corr, err)
         self.weights = data["weights"].to_numpy()
 
-        print(np.shape(self.xs), np.shape(self.cov), np.shape(self.weights))
-
 
 class MJB(FitData):
     """Mass-Spin-Morphology data from Obreschkow and Glazebrook 2014
