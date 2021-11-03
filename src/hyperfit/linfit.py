@@ -232,7 +232,7 @@ class LinFit(object):
     def get_sigmas(self, normal=None, norm_scat=None):
 
         """Calculates the offset between each data point and a plane in
-           units of the standard deviation, i.e., in terms of x-sigma.
+        units of the standard deviation, i.e., in terms of x-sigma.
 
         Args
         ----
@@ -491,23 +491,16 @@ class LinFit(object):
 if __name__ == "__main__":
 
     from src.hyperfit.linfit import LinFit
-    from src.hyperfit.data import ExampleData, GAMAsmVsize, TFR, FP6dFGS, MJB
+    from src.hyperfit.data import ExampleData, Hogg, GAMAsmVsize, TFR, FP6dFGS, MJB
 
     # Load in the ExampleData
-    data = ExampleData()
-    print(np.shape(data.xs), np.shape(data.cov), np.shape(data.weights))
+    data = FP6dFGS()
     hf = LinFit(data.xs, data.cov, weights=data.weights)
 
     # Run an MCMC
-    bounds = ((-5.0, 5.0), (-10.0, 10.0), (1.0e-5, 5.0))
-    mcmc_samples, mcmc_lnlike = hf.emcee(bounds, verbose=False)
+    bounds = ((-10.0, 10.0), (-10.0, 10.0), (-10.0, 10.0), (1.0e-5, 1.0))
+    mcmc_samples, mcmc_lnlike = hf.emcee(bounds, verbose=True)
     print(np.mean(mcmc_samples, axis=1), np.std(mcmc_samples, axis=1))
 
-    # Have a look at the normal coordinates
-    normal_mcmc_samples = np.vstack(hf.compute_normal(coords=mcmc_samples[:-1], vert_scat=mcmc_samples[-1]))
-    print(hf.normal, hf.norm_scat)
-    print(np.mean(normal_mcmc_samples, axis=1), np.std(normal_mcmc_samples, axis=1))
-
-    # Have a look at the sigma offsets
-    sigmas = hf.get_sigmas()
-    print(hf.get_sigmas(normal=normal_mcmc_samples[:-1], norm_scat=normal_mcmc_samples[-1]))
+    # Make the plot
+    data.plot(linfit=hf)

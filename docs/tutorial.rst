@@ -248,6 +248,10 @@ It is hence simple to remake the first plot on this page with data colour coded 
 
 .. code-block:: python
 
+    import matplotlib.pyplot as plt
+    from matplotlib import cm, colors
+    from matplotlib.patches import Ellipse
+
     sigmas = hf.get_sigmas()
 
     xvals = np.linspace(-1.0, 1.5, 1000)
@@ -257,8 +261,8 @@ It is hence simple to remake the first plot on this page with data colour coded 
     ells = [
         Ellipse(
             xy=[data[0][i], data[1][i]],
-            width=x_err[i],
-            height=y_err[i],
+            width=2.0 * x_err[i],
+            height=2.0 * y_err[i],
             angle=np.rad2deg(np.arccos(corr_xy[i])),
         )
         for i in range(len(data[0]))
