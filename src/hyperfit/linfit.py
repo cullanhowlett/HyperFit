@@ -315,7 +315,7 @@ class LinFit(object):
         self.norm_scat = self.bessel_cochran(self.norm_scat)
         self.coords, self.vert_scat = self.compute_cartesian()
 
-        return self.coords, self.vert_scat, -result["fun"][0]
+        return self.coords, self.vert_scat, -np.atleast_1d(result["fun"])[0]
 
     # A routine run a zeus MCMC on the model given the data
     def zeus(self, bounds, max_iter=100000, batchsize=1000, ntau=10.0, tautol=0.05, verbose=False):
