@@ -1,6 +1,9 @@
+import os
 import copy
 import zeus
 import emcee
+import snowline
+import contextlib
 import numpy as np
 from scipy.special import loggamma
 from scipy.optimize import differential_evolution
@@ -402,7 +405,7 @@ class LinFit(object):
 
         return mcmc_samples, mcmc_lnlike
 
-    # A routine run a zeus MCMC on the model given the data
+    # A routine run a emcee MCMC on the model given the data
     def emcee(self, bounds, max_iter=100000, batchsize=1000, ntau=50.0, tautol=0.05, verbose=False):
 
         """Run an MCMC on the data using the emcee sampler (Foreman-Mackay et. al., 2013).
@@ -487,6 +490,104 @@ class LinFit(object):
 
         return mcmc_samples, mcmc_lnlike
 
+    # A routine to run snowline on the model given the data
+    def snowline(
+        self,
+        bounds,
+        num_global_samples=400,
+        num_gauss_samples=400,
+        max_ncalls=100000,
+        min_ess=400,
+        max_improvement_loops=4,
+        heavytail_laplaceapprox=True,
+        verbose=False,
+    ):
+
+        """Get posterior samples and Bayesian evidence using the snowline package (https://johannesbuchner.github.io/snowline/).
+
+        Input kwargs are passed directly to snowline and are named the same, so see the snowline documentation
+        for more details on these. self.optimize is also called even though snowline runs it's own optimisation
+        to ensure some useful attributes are stored, and for consistency with the emcee and zeus functions.
+
+
+        Args
+        ----
+            bounds : sequence
+                Bounds for variables. Must be a set of N + 1 (min, max) pairs, one for each free parameter,
+                defining the finite lower and upper bounds. Passed straight through to scipy.differential_evolution, and
+                used to set the prior for the MCMC sampler.
+            num_global_samples: int, optional
+                Number of samples to draw from the prior.
+            num_gauss_samples: int, optional
+                Number of samples to draw from initial Gaussian likelihood approximation before improving the approximation.
+            max_ncalls: int, optional
+                Maximum number of likelihood function evaluations.
+            min_ess: int, optional
+                Number of effective samples to draw.
+            max_improvement_loops: float, optional
+                Number of times the proposal should be improved.
+           heavytail_laplaceapprox: bool, optional
+                If False, use laplace approximation as initial gaussian proposal.
+                If True, use a gaussian mixture, including the laplace approximation but also wider gaussians.
+
+        Return
+        ------
+            mcmc_samples : ndarray
+                (N + 1) x Nsamples dimensional array containing the flattened, burnt-in MCMC samples. First N dimensions
+                are the parameters of the plane. Last dimension is intrinsic scatter in the vertical axis.
+            mcmc_lnlike : ndarray
+                Nsamples dimensional array containing the log-likelihood for each MCMC sample.
+            logz : float
+                The Bayesian evidence.
+            logzerr: float
+                Error on the Bayesian evidence.
+
+        Raises
+        ------
+            ValueError: If the number of values in 'begin' is not equal to N + 1.
+
+        Note
+        ----
+        Also calls 'optimize' and stores the results in the relevant class attributes if you want to access the best-fit.
+
+        """
+
+        if len(bounds) != self.ndims + 1:
+            raise ValueError("Number of bounds (min, max) pairs not equal to N dimensions + 1")
+
+        # Run the optimizer. Redundant as snowline also does an optimization, but helps set other things up too and store
+        # some useful attributes, so done for consistency with other routines.
+        self.optimize(bounds)
+
+        paramnames = [f"$\\alpha_{{{i}}}$" for i in range(self.ndims)] + [f"$\\sigma_{{\\perp}}$"]
+
+        # Run Snowline
+        sampler = snowline.ReactiveImportanceSampler(
+            paramnames, lambda x: self._lnpost(x)[0], transform=self.snowline_transform
+        )
+        sampler.run(
+            num_global_samples=num_global_samples,
+            num_gauss_samples=num_gauss_samples,
+            max_ncalls=max_ncalls,
+            min_ess=min_ess,
+            max_improvement_loops=max_improvement_loops,
+            heavytail_laplaceapprox=heavytail_laplaceapprox,
+            verbose=verbose,
+        )
+
+        samples = sampler.results["samples"].T
+        mcmc_samples = np.vstack(self.compute_cartesian(normal=samples[:-1], norm_scat=samples[-1]))
+        mcmc_lnlike = self._lnpost(sampler.results["samples"])
+
+        return mcmc_samples, mcmc_lnlike, sampler.results["logz"], sampler.results["logzerr"]
+
+    def snowline_transform(self, x):
+        newx = [
+            (self.normal_bounds[i][1] - self.normal_bounds[i][0]) * x[i] + self.normal_bounds[i][0]
+            for i in range(len(x))
+        ]
+        return np.array(newx)
+
 
 if __name__ == "__main__":
 
@@ -494,12 +595,19 @@ if __name__ == "__main__":
     from src.hyperfit.data import ExampleData, Hogg, GAMAsmVsize, TFR, FP6dFGS, MJB
 
     # Load in the ExampleData
-    data = FP6dFGS()
+    data = TFR()
     hf = LinFit(data.xs, data.cov, weights=data.weights)
 
-    # Run an MCMC
-    bounds = ((-10.0, 10.0), (-10.0, 10.0), (-10.0, 10.0), (1.0e-5, 1.0))
-    mcmc_samples, mcmc_lnlike = hf.emcee(bounds, verbose=True)
+    # Run snowline, emcee and zeus
+    bounds = ((-10.0, 10.0), (-10.0, 10.0), (1.0e-5, 1.0))
+
+    mcmc_samples, mcmc_lnlike, logz, logzerr = hf.snowline(bounds, verbose=False)
+    print(np.mean(mcmc_samples, axis=1), np.std(mcmc_samples, axis=1), logz, logzerr)
+
+    mcmc_samples, mcmc_lnlike = hf.emcee(bounds, verbose=False)
+    print(np.mean(mcmc_samples, axis=1), np.std(mcmc_samples, axis=1))
+
+    mcmc_samples, mcmc_lnlike = hf.zeus(bounds, verbose=False)
     print(np.mean(mcmc_samples, axis=1), np.std(mcmc_samples, axis=1))
 
     # Make the plot

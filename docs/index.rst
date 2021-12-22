@@ -75,7 +75,7 @@ If you use this package please cite::
           adsnote = {Provided by the SAO/NASA Astrophysics Data System}
     }
 
-and include a link to the `Github <https://github.com/samreay/ChainConsumer/issues>`_ repository for this package (so that in the event any errors are identified, we can
+and include a link to the `Github <https://github.com/CullanHowlett/HyperFit>`_ repository for this package (so that in the event any errors are identified, we can
 blame it on the python or R packages respectively!). This is also the place to highlight bugs or suggest feature requests.
 
 Indices and tables

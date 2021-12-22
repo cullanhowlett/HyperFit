@@ -3,5 +3,5 @@
 # from .linfit import LinFit
 # from .data import FitData, GAMAsmVsize, ExampleData, TFR, FP6dFGS, MJB
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 # __all__ = ["LinFit", "FitData", "GAMAsmVsize", "ExampleData", "TFR", "FP6dFGS", "MJB"]

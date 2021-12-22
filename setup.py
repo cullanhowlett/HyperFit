@@ -33,6 +33,7 @@ setup(
         "zeus-mcmc>=2.3.0",
         "pandas>=1.2.0",
         "emcee>=3.0.0",
+        "snowline>=0.5.0",
     ],
     package_data={"hyperfit": ["data/*.txt"]},
     project_urls={
