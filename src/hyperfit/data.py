@@ -74,8 +74,8 @@ class FitData(ABC):
             sigmas = linfit.get_sigmas()
 
         # Make the plot
-        fig = plt.figure()
-        ax = fig.add_axes([0.15, 0.15, 1.03, 0.83])
+        fig = plt.figure(1)
+        ax = fig.add_axes([0.15, 0.15, 0.95, 0.83])
         for i, e in enumerate(ells):
             ax.add_artist(e)
             if linfit is not None:
@@ -180,6 +180,14 @@ class Hogg(FitData):
         )
         self.cov = np.einsum("jd,ijd,id->ijd", err, corr, err)
         self.weights = np.ones(len(data))
+
+    def plot(self, linfit=None):
+        labels = [
+            r"$\mathrm{log_{10}}(\mathrm{Stellar\,Mass}/M_{\odot})})$",
+            r"$\mathrm{log_{10}}(R_{e}/\mathrm{kpc})$",
+        ]
+        limits = [[45,350], [140, 700]]
+        self._plot_instance(labels, limits, linfit=linfit)
 
 
 class ExampleData(FitData):
