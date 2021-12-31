@@ -67,6 +67,8 @@ class LinFit(object):
         self.norm_scat = 0.0
         self.normal_bounds = None
 
+        self.mcmc_samples = None
+
     # Code to compute normal vectors from cartesian coordinates
     def compute_normal(self, coords=None, vert_scat=None):
 
