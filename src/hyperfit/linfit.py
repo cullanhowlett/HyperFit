@@ -308,7 +308,8 @@ class LinFit(object):
 
         self.normal_bounds = self._convert_bounds(bounds)
 
-        result = differential_evolution(lambda *args: -self._lnpost(*args), self.normal_bounds, tol=tol)
+
+        self.result = result = differential_evolution(lambda *args: -self._lnpost(*args), self.normal_bounds, tol=tol)
 
         if verbose:
             print(result)
@@ -403,8 +404,10 @@ class LinFit(object):
         tau = zeus.AutoCorrTime(sampler.get_chain(discard=0.5))
         burnin = int(2 * np.max(tau))
         samples = sampler.get_chain(discard=burnin, flat=True).T
-        mcmc_samples = np.vstack(self.compute_cartesian(normal=samples[:-1, :], norm_scat=samples[-1, :]))
+        self.mcmc_samples = mcmc_samples = np.vstack(self.compute_cartesian(normal=samples[:-1, :], norm_scat=samples[-1, :]))
         mcmc_lnlike = sampler.get_log_prob(discard=burnin, flat=True)
+
+        self.coords, self.coords_err = np.mean(mcmc_samples, axis=1), np.std(mcmc_samples, axis=1)
 
         return mcmc_samples, mcmc_lnlike
 
@@ -488,8 +491,10 @@ class LinFit(object):
         tau = sampler.get_autocorr_time(discard=int(0.5 * niter), tol=0)
         burnin = int(2 * np.max(tau))
         samples = sampler.get_chain(discard=burnin, flat=True).T
-        mcmc_samples = np.vstack(self.compute_cartesian(normal=samples[:-1], norm_scat=samples[-1]))
+        self.mcmc_samples = mcmc_samples = np.vstack(self.compute_cartesian(normal=samples[:-1], norm_scat=samples[-1]))
         mcmc_lnlike = sampler.get_log_prob(discard=burnin, flat=True)
+
+        self.coords, self.coords_err = np.mean(mcmc_samples, axis=1), np.std(mcmc_samples, axis=1)
 
         return mcmc_samples, mcmc_lnlike
 
@@ -579,8 +584,10 @@ class LinFit(object):
         )
 
         samples = sampler.results["samples"].T
-        mcmc_samples = np.vstack(self.compute_cartesian(normal=samples[:-1], norm_scat=samples[-1]))
+        self.mcmc_samples = mcmc_samples = np.vstack(self.compute_cartesian(normal=samples[:-1], norm_scat=samples[-1]))
         mcmc_lnlike = self._lnpost(sampler.results["samples"])
+
+        self.coords, self.coords_err = np.mean(mcmc_samples, axis=1), np.std(mcmc_samples, axis=1)
 
         return mcmc_samples, mcmc_lnlike, sampler.results["logz"], sampler.results["logzerr"]
 
