@@ -318,6 +318,9 @@ class LinFit(object):
         self.norm_scat = self.bessel_cochran(self.norm_scat)
         self.coords, self.vert_scat = self.compute_cartesian()
 
+        if self.norm_scat<self.normal_bounds[2][0] or self.norm_scat>self.normal_bounds[2][1]:
+            raise ValueError("Scatter outside of bounds (min,max) ",bounds[2])
+
         return self.coords, self.vert_scat, -np.atleast_1d(result["fun"])[0]
 
     # A routine run a zeus MCMC on the model given the data
