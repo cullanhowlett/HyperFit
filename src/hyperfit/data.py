@@ -76,7 +76,7 @@ class FitData(ABC):
         # Make the plot
         fig = plt.figure(1)
         fig.clf()
-        ax = fig.add_axes([0.15, 0.15, 0.8, 0.83])
+        ax = fig.add_subplot(111)
         for i, e in enumerate(ells):
             ax.add_artist(e)
             if linfit is not None:
