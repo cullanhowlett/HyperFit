@@ -74,8 +74,9 @@ class FitData(ABC):
             sigmas = linfit.get_sigmas()
 
         # Make the plot
-        fig = plt.figure()
-        ax = fig.add_axes([0.15, 0.15, 1.03, 0.83])
+        fig = plt.figure(1)
+        fig.clf()
+        ax = fig.add_subplot(111)
         for i, e in enumerate(ells):
             ax.add_artist(e)
             if linfit is not None:
@@ -88,6 +89,12 @@ class FitData(ABC):
             ax.plot(xvals, yvals, c="k", marker="None", ls="-", lw=1.3, alpha=0.9)
             ax.plot(xvals, yvals - linfit.vert_scat, c="k", marker="None", ls="--", lw=1.3, alpha=0.9)
             ax.plot(xvals, yvals + linfit.vert_scat, c="k", marker="None", ls="--", lw=1.3, alpha=0.9)
+
+            y_bestfit = np.outer(xvals, linfit.coords[0]) + linfit.coords[1]
+            y_chain = np.outer(xvals, linfit.mcmc_samples[0]) + linfit.mcmc_samples[1]
+            y_chain_quantiles = np.quantile(y_chain, [0.1587, 0.8414], axis=1)
+            ax.fill_between(xvals, y_chain_quantiles[0], y_chain_quantiles[1], color="k", alpha=0.5)
+
         ax.set_xlabel(labels[0], fontsize=16)
         ax.set_ylabel(labels[1], fontsize=16)
         ax.set_xlim(limits[0][0], limits[0][1])
@@ -180,6 +187,14 @@ class Hogg(FitData):
         )
         self.cov = np.einsum("jd,ijd,id->ijd", err, corr, err)
         self.weights = np.ones(len(data))
+
+    def plot(self, linfit=None):
+        labels = [
+            r"$\mathrm{log_{10}}(\mathrm{Stellar\,Mass}/M_{\odot})})$",
+            r"$\mathrm{log_{10}}(R_{e}/\mathrm{kpc})$",
+        ]
+        limits = [[25,350], [140, 700]]
+        self._plot_instance(labels, limits, linfit=linfit)
 
 
 class ExampleData(FitData):
